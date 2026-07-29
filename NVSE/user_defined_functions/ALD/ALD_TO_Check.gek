@@ -5,7 +5,7 @@ begin function {}
 	Goo1.AuxVarErase "*ALD_TimerSet"
 
 	if Goo1.AuxVarGetFlt "*ALD_AnimActive" == 1 && Player.IsIdlePlayingEx (Goo1.AuxVarGetRef "*ALD_Anim") == 0
-		print "[ALD] Timeout: stuck state detected, forcing cleanup"
+		;print "[ALD] Timeout: stuck state detected, forcing cleanup"
 		call (CompileScript "ALD\ALD_CleanUp_Handler.gek")
 		; Keep the loop alive if another discovery is already queued
 		if Goo1.AuxVarGetFlt "*ALD_RW" == 0

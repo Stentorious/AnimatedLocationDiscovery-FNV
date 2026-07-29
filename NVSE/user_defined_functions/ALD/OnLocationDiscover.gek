@@ -1,0 +1,24 @@
+ref rMapMarker
+
+array_var aPipboy
+
+begin Function {rMapMarker}
+
+	if eval Goo1.AuxVarGetFlt "*PipMap_Anim" > 0 || IsReference rMapMarker == 0 || rMapMarker.GetMapMarkerType == 0 || (Goo1.AuxVarGetFlt "*ALD_A3P" == 0 && IsPC1stPerson == 0)
+		return
+	endif
+
+	; Is wearing Pip-Boy
+	aPipboy = Player.GetChildBlocks "Bip01 L ForeTwist" 2
+	if eval (Ar_Size aPipboy) < 1 || Player.GetNifBlockFlag (aPipboy[0]) 0 2
+		aPipboy = ar_Null
+		return
+	endif
+
+	Goo1.AuxVarSetRef "*ALD_MarkerRef" rMapMarker
+	Goo1.AuxVarSetFlt "*ALD_RW" 1
+	DispatchEventAlt "*ALD_InitMain" 1 rMapMarker
+
+	aPipboy = ar_Null
+
+end

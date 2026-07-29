@@ -1,4 +1,4 @@
-print "[Animated Location Discovery] loaded"
+;print "[Animated Location Discovery] loaded"
 
 ; == SET MOD OPTIONS ==
 
@@ -10,41 +10,11 @@ DispatchEventAlt "*ALD_InitMain" 0
 ;-----------Event------------
 
 ; Fast travel event handler
-SetOnFastTravelEventHandler (begin function {ref rMapMarkerRef}
-    call (CompileScript "ALD\ALD_Update_Map.gek")
-end) 1
-
-; Cell exit event handler
-SetEventHandler "OnCellExit" (begin function {ref rExitedCell}
-    call (CompileScript "ALD\ALD_Update_Map.gek")
-end)
-
-; Location discover event handler
-SetOnLocationDiscoverEventHandler (begin function {ref rMapMarkerRef}
-	if eval Goo1.AuxVarGetFlt "*PipMap_Anim" > 0
-		return
-	endif
-	; pipboy armor check
-	array_var aPipboy = Player.GetChildBlocks "Bip01 L ForeTwist" 2
-	if eval (Ar_Size aPipboy) < 1 || Player.GetNifBlockFlag (aPipboy[0]) 0 2
-		print "[ALD] power Armor"
-		return
-	endif
-	DispatchEventAlt "*ALD_PreInit" 1 rMapMarkerRef
-end) 1
+SetEventHandler "OnCellExit" (CompileScript "ALD\ALD_Update_Map.gek")
+SetOnFastTravelEventHandler (CompileScript "ALD\ALD_Update_Map.gek") 1
+SetOnLocationDiscoverEventHandler (CompileScript "ALD\OnLocationDiscover.gek") 1
 
 ;-----------Function------------
-
-; Pre-init check for POV and settings
-SetEventHandlerAlt "*ALD_PreInit" (begin function {int reg ref rMapMarkerRef}
-	if eval Goo1.AuxVarGetFlt "*ALD_A3P" == 0 && IsPC1stPerson == 0
-		return
-	endif
-	Goo1.AuxVarSetRef "*ALD_MarkerRef" rMapMarkerRef
-	Goo1.AuxVarSetStr "*ALD_MarkerName" (rMapMarkerRef.GetMapMarkerName)
-	Goo1.AuxVarSetFlt "*ALD_RW" 1
-	DispatchEventAlt "*ALD_InitMain" reg rMapMarkerRef
-end)
 
 ; initialize main loop
 SetEventHandlerAlt "*ALD_InitMain" (begin function {int reg ref rMapMarkerRef}

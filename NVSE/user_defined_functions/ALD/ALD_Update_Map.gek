@@ -1,7 +1,10 @@
-begin Function {}
-	ref rWorldSpace
-	ref rWorldSpaceTemp
-	
+ref rWorldSpace
+
+ref rWorldSpaceTemp
+
+begin Function {ref rWorldSpace}
+
+	; Get current world map texture
 	if eval Player.IsInInterior
 		if eval IsReference (rWorldSpace = GetPCLastExteriorDoor) == 0
 			return
@@ -10,15 +13,12 @@ begin Function {}
 	else
 		rWorldSpace = Player.GPW
 	endif
-	
 	while IsFormValid (rWorldSpace = GetWorldParentWorld (rWorldSpaceTemp = rWorldSpace))
 	loop
-	
 	rWorldSpace = rWorldSpaceTemp
-	
 	if eval (TestExpr GetWorldSpaceMapTexture rWorldSpace) == 0
 		return
 	endif
-	SetUIStringAlt "HUDMainMenu\LocationDiscovery\_WorldMapTexture" (GetWorldSpaceMapTexture rWorldSpace)	
-end
+	SetUIStringAlt "HUDMainMenu\LocationDiscovery\_WorldMapTexture" (GetWorldSpaceMapTexture rWorldSpace)
 
+end

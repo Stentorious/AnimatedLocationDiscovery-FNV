@@ -30,10 +30,8 @@ begin function {}
 	; instantly at the start of the next anim
 	Goo1.AuxVarErase "*ALD_PostAnim"
 	Goo1.AuxVarErase "*ALD_ButtonAnim"
-	Goo1.AuxVarErase "*ALD_MarkerName"
 	Goo1.AuxVarErase "*ALD_TimerSet"
 	Goo1.AuxVarErase "*ALD_TO"
 	Goo1.AuxVarErase "*ALD_Wait"
 	Goo1.AuxVarErase "*_PlayAnim_Stent"
 end
-

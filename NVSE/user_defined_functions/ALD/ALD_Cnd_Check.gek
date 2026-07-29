@@ -13,7 +13,7 @@ begin function {}
 		SetFunctionValue 1
 		return
 	endif
-		
+
 	; Enhanced Movement sprint active
 	if Player.AuxVarGetFlt "*_EMSprint"
 		SetFunctionValue 1

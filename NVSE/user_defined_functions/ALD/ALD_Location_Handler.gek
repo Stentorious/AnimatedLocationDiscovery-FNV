@@ -4,19 +4,9 @@ float fPosX
 float fPosY
 
 begin Function {rMapMarker}
-	;print "location handler running"
-
-	; Validate marker
-	if eval IsReference rMapMarker == 0
-		return
-	endif
 
 	; Set the name first so it shows even if the marker type is unavailable
 	SetUIStringAlt	"HUDMainMenu\LocationDiscovery\MapMarker\_Location" (rMapMarker.GetMapMarkerName)
-
-	if eval rMapMarker.GetMapMarkerType == 0
-		return
-	endif
 
 	; Update map
 	rMapMarker.GetWorldMapPosMults (fPosX) (fPosY)
