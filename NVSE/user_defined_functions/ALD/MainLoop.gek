@@ -1,0 +1,80 @@
+ref rIdle
+
+begin Function {}
+
+	; Misc checks
+    if eval Player.IsBlockingOrAiming || IsControlPressed 4 || Player.AuxVarGetFlt "*_EMSprint" || Player.IsAnimSequencePlaying "Characters\_male\em_Sprint_1stPerson\mtFastForward.kf" || IsFormValid (Player.GetDialogueTarget) || (IsFormValid (rIdle = player.GetPlayedIdle) && rIdle != Goo1.AuxVarGetRef "*ALD_Anim")
+        return
+    endif
+
+	; Combat check - we check distance here now also so you can be in combat technically but not close enough to have issues
+	if Player.IsInCombat && Goo1.AuxVarGetFlt "*ALD_AC" == 0
+		; Block by default; only allow when a valid target is provably far away.
+		; In combat with no known target (fleeing, being hunted) the old code fell
+		; through and the anim played mid-combat despite the setting
+		array_var aTargets = Player.GetCombatTargets
+		int iCount = Ar_Size aTargets
+		int bBlock = 1
+		if iCount > 0
+			ref rTarget = aTargets[0]
+			if IsFormValid rTarget && Player.GetDistance rTarget >= 2500
+				bBlock = 0
+			endif
+		endif
+		ar_Null aTargets
+		if bBlock
+			return
+		endif
+	endif
+
+	; Press button
+	if Goo1.AuxVarGetFlt "*ALD_ButtonAnim" == 1
+		Goo1.AuxVarErase "*ALD_ButtonAnim"
+
+		ToggleNthPipboyLight 2 1
+
+		; Only overwrite the icon if we actually got a valid path back, else the
+		; tile keeps its previous texture and shows as Unknown
+
+		ref rMapMarker = Goo1.AuxVarGetRef "*ALD_MarkerRef"
+		string_var sIcon = rMapMarker.GetCustomMapMarkerIcon
+		if eval (Sv_Length sIcon) > 0
+			SetUIStringAlt "HUDMainMenu\LocationDiscovery\MapMarker\_filename_1" "%z" sIcon
+		endif
+		sv_destruct sIcon
+    	SetUIFloatGradual "HUDMainMenu\LocationDiscovery\_Animation" 0 1 1.5
+
+    	CallWhile ({} => Player.ProjectUITile "HUDMainMenu\LocationDiscovery" "pipboyscreen:0" -15000 -15000 1024 768) ({} => Player.IsIdlePlayingEx (Goo1.AuxVarGetRef "*ALD_Anim") == 1 )
+    	CallWhen (CompileScript "ALD\ALD_Reset_Handler.gek") ({} => Player.IsIdlePlayingEx (Goo1.AuxVarGetRef "*ALD_Anim") == 0)
+
+	endif
+
+	if Goo1.AuxVarGetFlt "*ALD_RW" == 1
+		if eval MenuMode || Player.GetIsRagdolled || Player.GetDead || GetPipBoyMode || Player.GetAnimAction > -1 || IsInKillCam || GetPlayerControlsDisabled 0 1 0 0 0 0 0
+			return
+		endif
+		if Goo1.AuxVarGetFlt "*ALD_RW" == 1 && Player.IsIdlePlayingEx (Goo1.AuxVarGetRef "*ALD_Anim") == 0
+			Goo1.AuxVarErase "*ALD_RW"
+			Goo1.AuxVarSetFlt "*ALD_AnimActive" 1
+			call (CompileScript "ALD\ALD_Anim_Handler.gek")
+		endif
+	else
+		if Player.IsIdlePlayingEx (Goo1.AuxVarGetRef "*ALD_Anim")
+			if Goo1.AuxVarGetFlt "*ALD_Attach" == 1
+				Call (CompileScript "ALD\ALD_Attach_Handler.gek")
+			endif
+		endif
+		if Goo1.AuxVarGetFlt "*ALD_AnimActive" == 0 && Player.IsIdlePlayingEx (Goo1.AuxVarGetRef "*ALD_Anim") == 0
+			call (CompileScript "ALD\ALD_CleanUp_Handler.gek")
+			SetGameMainLoopCallback (CompileScript "ALD\MainLoop.gek") 0
+		endif
+		if eval Goo1.AuxVarGetFlt "*ALD_RW" == 0 && Goo1.AuxVarGetFlt "*ALD_TimerSet" == 0
+			Goo1.AuxVarSetFlt "*ALD_TimerSet" 1
+			; Timeout body lives in its own UDF - inline it and the lambda blows the
+			; 512-char parenthesized-expression limit, which kills this whole file
+			CallAfterSeconds 5 (CompileScript "ALD\ALD_TO_Check.gek")
+		endif
+	endif
+
+
+end

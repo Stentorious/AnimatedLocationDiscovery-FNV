@@ -1,83 +1,16 @@
 ;print "[Animated Location Discovery] loaded"
 
-; == SET MOD OPTIONS ==
+; On game restart
+if eval Goo1.AuxVarGetFlt "*ALD_Init"
+	return
+endif
+Goo1.AuxVarSetFlt "*ALD_Init" 1
 
+; == SET MOD OPTIONS ==
 Goo1.AuxVarSetFlt "*ALD_AC" (GetINIFloat "Settings:iAllowCombat" "ALD\AnimatedLocation.ini")
 Goo1.AuxVarSetFlt "*ALD_A3P" (GetINIFloat "Settings:iAllow3rdPerson" "ALD\AnimatedLocation.ini")
 
-DispatchEventAlt "*ALD_InitMain" 0
-
 ;-----------Event------------
-
-; Fast travel event handler
 SetEventHandler "OnCellExit" (CompileScript "ALD\ALD_Update_Map.gek")
 SetOnFastTravelEventHandler (CompileScript "ALD\ALD_Update_Map.gek") 1
 SetOnLocationDiscoverEventHandler (CompileScript "ALD\OnLocationDiscover.gek") 1
-
-;-----------Function------------
-
-; initialize main loop
-SetEventHandlerAlt "*ALD_InitMain" (begin function {int reg ref rMapMarkerRef}
-	;print "[ALD] InitMain reg=" + $reg
-	SetGameMainLoopCallback (begin function {}
-		int bProc = call (CompileScript "ALD\ALD_Cnd_Check.gek")
-		if bProc
-			return
-		endif
-		DispatchEventAlt "*ALD_CBH" rMapMarkerRef
-		if Goo1.AuxVarGetFlt "*ALD_RW" == 1
-			DispatchEventAlt "*ALD_CMF"
-		else
-			DispatchEventAlt "*ALD_CAL"
-			DispatchEventAlt "*ALD_CCU"
-			DispatchEventAlt "*ALD_CTO"
-		endif
-	end) reg 1 1
-end)
-
-; Button handler
-SetEventHandlerAlt "*ALD_CBH" (begin Function {ref rMapMarkerRef}
-	if Goo1.AuxVarGetFlt "*ALD_ButtonAnim" == 1
-		Goo1.AuxVarErase "*ALD_ButtonAnim"
-		call (CompileScript "ALD\ALD_Anim_Button.gek") rMapMarkerRef
-	endif
-end)
-
-; Animation Handler
-SetEventHandlerAlt "*ALD_CMF" (begin Function {}
-	if eval MenuMode || Player.GetIsRagdolled || Player.GetDead || GetPipBoyMode || Player.GetAnimAction > -1 || IsInKillCam || GetPlayerControlsDisabled 0 1 0 0 0 0 0
-		return
-	endif
-	if Goo1.AuxVarGetFlt "*ALD_RW" == 1 && Player.IsIdlePlayingEx (Goo1.AuxVarGetRef "*ALD_Anim") == 0
-		Goo1.AuxVarErase "*ALD_RW"
-		Goo1.AuxVarSetFlt "*ALD_AnimActive" 1
-		call (CompileScript "ALD\ALD_Anim_Handler.gek")
-	endif
-end)
-
-; Attachment handler
-SetEventHandlerAlt "*ALD_CAL" (begin Function {}
-	if Player.IsIdlePlayingEx (Goo1.AuxVarGetRef "*ALD_Anim")
-		if Goo1.AuxVarGetFlt "*ALD_Attach" == 1
-			call (CompileScript "ALD\ALD_Attach_Handler.gek")
-		endif
-	endif
-end)
-
-; Clean Handler
-SetEventHandlerAlt "*ALD_CCU" (begin function {}
-	if Goo1.AuxVarGetFlt "*ALD_AnimActive" == 0 && Player.IsIdlePlayingEx (Goo1.AuxVarGetRef "*ALD_Anim") == 0
-		call (CompileScript "ALD\ALD_CleanUp_Handler.gek")
-		DispatchEventAlt "*ALD_InitMain" 0
-	endif
-end)
-
-; Timeout Handler
-SetEventHandlerAlt "*ALD_CTO" (begin function {}
-	if eval Goo1.AuxVarGetFlt "*ALD_RW" == 0 && Goo1.AuxVarGetFlt "*ALD_TimerSet" == 0
-		Goo1.AuxVarSetFlt "*ALD_TimerSet" 1
-		; Timeout body lives in its own UDF - inline it and the lambda blows the
-		; 512-char parenthesized-expression limit, which kills this whole file
-		CallAfterSeconds 5 (CompileScript "ALD\ALD_TO_Check.gek")
-	endif
-end)

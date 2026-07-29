@@ -17,7 +17,7 @@ begin Function {rMapMarker}
 
 	Goo1.AuxVarSetRef "*ALD_MarkerRef" rMapMarker
 	Goo1.AuxVarSetFlt "*ALD_RW" 1
-	DispatchEventAlt "*ALD_InitMain" 1 rMapMarker
+	SetGameMainLoopCallback (CompileScript "ALD\MainLoop.gek") 1 1 9
 
 	aPipboy = ar_Null
 

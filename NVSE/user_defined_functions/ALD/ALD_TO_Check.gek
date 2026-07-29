@@ -9,7 +9,7 @@ begin function {}
 		call (CompileScript "ALD\ALD_CleanUp_Handler.gek")
 		; Keep the loop alive if another discovery is already queued
 		if Goo1.AuxVarGetFlt "*ALD_RW" == 0
-			DispatchEventAlt "*ALD_InitMain" 0
+			SetGameMainLoopCallback (CompileScript "ALD\MainLoop.gek") 0
 		endif
 	endif
 end
