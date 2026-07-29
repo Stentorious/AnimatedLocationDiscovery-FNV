@@ -1,0 +1,15 @@
+begin function {}
+	; Re-arm the failsafe so every anim gets its own timeout window - the flag
+	; used to stay set until CleanUp, so a chained discovery left the next anim
+	; with no failsafe and an interruption meant permanent control loss
+	Goo1.AuxVarErase "*ALD_TimerSet"
+
+	if Goo1.AuxVarGetFlt "*ALD_AnimActive" == 1 && Player.IsIdlePlayingEx (Goo1.AuxVarGetRef "*ALD_Anim") == 0
+		print "[ALD] Timeout: stuck state detected, forcing cleanup"
+		call (CompileScript "ALD\ALD_CleanUp_Handler.gek")
+		; Keep the loop alive if another discovery is already queued
+		if Goo1.AuxVarGetFlt "*ALD_RW" == 0
+			DispatchEventAlt "*ALD_InitMain" 0
+		endif
+	endif
+end

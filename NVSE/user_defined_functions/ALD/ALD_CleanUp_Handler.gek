@@ -1,0 +1,39 @@
+begin function {}
+	; Detach any 3D models from player
+	AttachModel Player 2 (Goo1.AuxVarGetStr "*ALD_Attachable")
+	Player.RefreshAnimData
+
+	; Restore player controls and HUD (safety net in case animation failed to re-enable them)
+	EnableControl 13
+	EnablePlayerControlsAltEx 30084
+	SetUIFloatAlt "HUDMainMenu\JDC\_visible_stent" 1
+	SetUIFloatAlt "HUDMainMenu\ReticleCenter\reticle_center\alpha" 255
+
+	; Restore weapon node scale on both skeletons - the anims scale "Weapon" to 0 to hide
+	; the held weapon, and an interrupted anim never plays its restore keys, leaving every
+	; weapon invisible for the rest of the session (Nexus bugs: weapons disappear)
+	Player.SetNifBlockScale "Weapon" 1 1
+	Player.SetNifBlockScale "Weapon" 1 2
+
+	; Restore pipboy light glow nodes (safety net in case the anim was interrupted before reset)
+	ToggleNthPipboyLight 0 1
+	ToggleNthPipboyLight 1 1
+	ToggleNthPipboyLight 2 1
+
+	; Clear all state variables so next discovery starts fresh
+	Goo1.AuxVarErase "*ALD_Model"
+	Goo1.AuxVarErase "*ALD_Attachable"
+	; NOTE: Do NOT erase *ALD_Anim - reuse the TempCloneForm to prevent memory accumulation
+	Goo1.AuxVarErase "*ALD_AnimActive"
+	; The kf text keys set *ALD_PostAnim (MSPostAnim was a stale rename) and
+	; *ALD_ButtonAnim - a leftover ButtonAnim flag fires the button reveal
+	; instantly at the start of the next anim
+	Goo1.AuxVarErase "*ALD_PostAnim"
+	Goo1.AuxVarErase "*ALD_ButtonAnim"
+	Goo1.AuxVarErase "*ALD_MarkerName"
+	Goo1.AuxVarErase "*ALD_TimerSet"
+	Goo1.AuxVarErase "*ALD_TO"
+	Goo1.AuxVarErase "*ALD_Wait"
+	Goo1.AuxVarErase "*_PlayAnim_Stent"
+end
+

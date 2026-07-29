@@ -1,0 +1,65 @@
+ref rIdle
+
+begin function {}
+
+	; Temp crash fix
+    if eval Player.IsBlockingOrAiming
+        SetFunctionValue 1
+        return
+    endif
+
+	; Crash fix - attack control held (shooting as the marker unlocks)
+	if IsControlPressed 4
+		SetFunctionValue 1
+		return
+	endif
+		
+	; Enhanced Movement sprint active
+	if Player.AuxVarGetFlt "*_EMSprint"
+		SetFunctionValue 1
+		return
+	endif
+
+	; Player in dialogue
+	if IsFormValid (Player.GetDialogueTarget)
+		SetFunctionValue 1
+		return
+	endif
+
+	; Another idle is playing
+	if IsFormValid (rIdle = player.GetPlayedIdle) && rIdle != Goo1.AuxVarGetRef "*ALD_Anim"
+		SetFunctionValue 1
+		return
+	endif
+
+	; Combat check - we check distance here now also so you can be in combat technically but not close enough to have issues
+	if Player.IsInCombat && Goo1.AuxVarGetFlt "*ALD_AC" == 0
+		; Block by default; only allow when a valid target is provably far away.
+		; In combat with no known target (fleeing, being hunted) the old code fell
+		; through and the anim played mid-combat despite the setting
+		array_var aTargets = Player.GetCombatTargets
+		int iCount = Ar_Size aTargets
+		int bBlock = 1
+		if iCount > 0
+			ref rTarget = aTargets[0]
+			if IsFormValid rTarget && Player.GetDistance rTarget >= 2500
+				bBlock = 0
+			endif
+		endif
+		ar_Null aTargets
+		if bBlock
+			SetFunctionValue 1
+			return
+		endif
+	endif
+
+	; Player sprinting - backup sprint catcher maybe?
+	if eval Player.IsAnimSequencePlaying "Characters\_male\em_Sprint_1stPerson\mtFastForward.kf"
+		SetFunctionValue 1
+		return
+	endif
+
+	; All clear - animation can play
+	SetFunctionValue 0
+
+end

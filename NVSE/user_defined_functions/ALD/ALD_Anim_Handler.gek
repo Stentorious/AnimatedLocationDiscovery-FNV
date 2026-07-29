@@ -1,0 +1,110 @@
+begin function {}
+	string_var sEDID = Goo1.AuxVarGetStr "*ALD_MarkerName"
+	;print "sEDID = " + $(sEDID)
+
+	int bPov
+	int Timer = 2
+
+	; ----------------------------------------------------------------------------
+	;  Attach Node Check
+	; ----------------------------------------------------------------------------
+	if eval !ModelHasBlock Player "B42AttachPointL"
+		InsertNode Player 3 "Bip01 L Hand|B42AttachPointL"
+		Player.RefreshAnimData
+	endif
+
+	; ----------------------------------------------------------------------------
+	;  Setup Base Animation Path
+	; ----------------------------------------------------------------------------
+	string_var sAnimBasePath
+
+	int iHasAnimType = FileExists ("meshes\B42Interact\ALD\Anim") 1
+	if iHasAnimType == 1
+		sAnimBasePath = ("B42Interact\ALD\Anim")
+	endif
+
+	int iHasAnimEDID = FileExists ("meshes\B42Interact\ALD\EDID\" + $(sEDID)) 1
+	if iHasAnimEDID == 1
+		sAnimBasePath = ("B42Interact\ALD\EDID\" + $(sEDID))
+	endif
+
+	; ----------------------------------------------------------------------------
+	;  Animation Handler
+	; ----------------------------------------------------------------------------
+	if sAnimBasePath
+		string_var sAnimFolderPathPC
+		if IsPC1stPerson
+			bPov = 2
+			sAnimFolderPathPC = sAnimBasePath + "\1st\"
+		else
+			bPov = 1
+			sAnimFolderPathPC = sAnimBasePath + "\3rd\"
+		endif
+
+		array_var aAllFiles = GetFilesInFolder ("meshes\" + (sAnimFolderPathPC))
+		array_var animFilesPC = Ar_List
+		array_var aFile
+
+		; Filter to only .kf animation files
+		foreach aFile <- aAllFiles
+			if eval sv_find ".kf" (aFile["value"]) > -1
+				Ar_Append animFilesPC (aFile["value"])
+			endif
+		loop
+		ar_Null aAllFiles
+
+		; Animation file found
+		if eval (Ar_Size animFilesPC) > 0
+			; Rand is max-exclusive; the old "rand 0 N -1" parsed as Rand minus 1 and
+			; truncated to index 0 every time, so extra anim files were never picked
+			int randomIndexPC = floor (Rand 0 (Ar_Size animFilesPC))
+			string_var sSelectedAnimPC = animFilesPC[randomIndexPC]
+			string_var sFullAnimPathPC = sAnimFolderPathPC + $(sSelectedAnimPC)
+			ar_Null animFilesPC
+
+			if (GetType (Goo1.AuxVarGetRef "*ALD_Anim") != 72)
+				ref PCIdleClone = TempCloneForm LooseTalkLHCasualH060 1
+				Goo1.AuxVarSetRef "*ALD_Anim" PCIdleClone
+			endif
+
+			; Validate idle form before proceeding
+			ref rIdleForm = Goo1.AuxVarGetRef "*ALD_Anim"
+			if eval !IsFormValid rIdleForm
+				print "[ALD] Error: Invalid idle form"
+				return
+			endif
+
+			;print "Full Idle path = " + $(sFullAnimPathPC)
+
+			; Validate marker ref before calling location handler
+			ref rMarker = Goo1.AuxVarGetRef "*ALD_MarkerRef"
+			if IsFormValid rMarker
+				call (CompileScript "ALD\ALD_Location_Handler.gek") rMarker
+			endif
+
+			; Disable controls
+			if eval GSIV 0 > 0
+				SetSmoothIronsightsValue 0 0
+			endif
+			SetUIFloatAlt "HUDMainMenu\JDC\_visible_stent" 0
+			SetUIFloatAlt "HUDMainMenu\ReticleCenter\reticle_center\alpha" 0
+
+			SetIdleAnimPath rIdleForm (sFullAnimPathPC)
+			Player.ForcePlayIdle rIdleForm bPov
+			CallAfterFrames 5 ({} => Player.ProjectUITile "HUDMainMenu\LocationDiscovery" "pipboyscreen:0" -15000 -15000 1024 768)
+
+			; ----------------------------------------------------------------------------
+			;  Animation Cleanup
+			; ----------------------------------------------------------------------------
+			CallAfterSeconds Timer (begin Function {}
+				CallWhen (begin Function {}
+					SetUIFloatAlt "HUDMainMenu\JDC\_visible_stent" 1
+					SetUIFloatAlt "HUDMainMenu\ReticleCenter\reticle_center\alpha" 255
+					sv_destruct sSelectedAnimPC sFullAnimPathPC sAnimFolderPathPC sAnimBasePath sEDID
+				end) ({} => Player.IsIdlePlayingEx (Goo1.AuxVarGetRef "*ALD_Anim") == 0)
+			end)
+
+		endif
+	endif
+
+end

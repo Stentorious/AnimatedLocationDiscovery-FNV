@@ -1,0 +1,202 @@
+<rect name="LocationDiscovery">
+
+	<_filename_0> interface\icons\world map\icon_map_undiscovered.dds </_filename_0>
+	<_filename_1> interface\icons\world map\icon_map_undiscovered.dds </_filename_1>
+	<_filename>
+		<copy src="me()" trait="_visible" /> <eq> 2 </eq>
+		<copy src="me()" trait="_filename_" />
+	</_filename>
+
+	<visible> 1 </visible>
+	<locus> 1 </locus>
+
+	<x>
+		<copy src="me()" trait="_offset_x" />
+		<add> 512 </add>
+		<sub>
+			<copy src="me()" trait="width" />
+			<mul src="me()" trait="_PlrX" />
+		</sub>
+		<sub src="me()" trait="_MapOffsetX" />
+	</x>
+	<y>
+		<copy src="me()" trait="_offset_y" />
+		<add> 384 </add>
+		<sub>
+			<copy src="me()" trait="height" />
+			<mul src="me()" trait="_PlrY" />
+		</sub>
+		<sub src="me()" trait="_MapOffsetY" />
+	</y>
+
+	<_offset_x> -15000 </_offset_x>
+	<_offset_y> -15000 </_offset_y>
+
+	<_MapOffsetX> 126 </_MapOffsetX>
+	<_MapOffsetY> 86 </_MapOffsetY>
+
+	<width> 4000 </width>
+	<height> 4000 </height>
+
+	<_PlrX> 0 </_PlrX>
+	<_PlrY> 0 </_PlrY>
+	<_WorldMapTexture> Interface\worldmap\wasteland_2048_no_map.dds </_WorldMapTexture>
+
+	<_Animation> 0 </_Animation>
+
+	<_systemcolor>
+		<copy> &pipboy; </copy>
+		<onlyifnot src="io()" trait="_ColorfulMapMarkerFix" />
+	</_systemcolor>
+
+	<image name="WorldMap">
+		<visible> 1 </visible>
+		<alpha> 175 </alpha>
+		<depth> 0 </depth>
+		<x> 0 </x>
+		<y> 0 </y>
+		<width> <copy src="parent()" trait="width" /> </width>
+		<height> <copy src="parent()" trait="height" /> </height>
+		<zoom> &scale; </zoom>
+		<systemcolor> &pipboy; </systemcolor>
+		<filename> <copy src="parent()" trait="_WorldMapTexture" /> </filename>
+	</image>
+
+	<image name="MapMarker">
+		<visible> 1 </visible>
+		<alpha> 255 </alpha>
+		<locus> 1 </locus>
+		<depth> 2 </depth>
+		<x>
+			<copy src="parent()" trait="_PlrX" />
+			<mul src="parent()" trait="width" />
+			<sub>
+				<copy src="me()" trait="width" />
+				<div> 2 </div>
+			</sub>
+		</x>
+		<y>
+			<copy src="parent()" trait="_PlrY" />
+			<mul src="parent()" trait="height" />
+			<sub>
+				<copy src="me()" trait="height" />
+				<div> 2 </div>
+			</sub>
+		</y>
+		<width> 100 </width>
+		<height> <copy src="me()" trait="width" /> </height>
+		<zoom> &scale; </zoom>
+		<systemcolor> <copy src="parent()" trait="_systemcolor" /> </systemcolor>
+		<_filename_0> interface\icons\world map\icon_map_undiscovered.dds </_filename_0>
+		<_filename_1> interface\icons\world map\icon_map_undiscovered.dds </_filename_1>
+		<filename>
+			<copy src="parent()" trait="_Animation" /> <gt> 0 </gt>
+			<copy src="me()" trait="_filename_" />
+		</filename>
+		<_location> Location </_location>
+		<_alpha> 255 </_alpha>
+		<_visible> 0 </_visible>
+
+		<image name="Highlight">
+			<visible> 1 </visible>
+			<alpha>
+				<copy> 255 </copy>
+				<sub>
+					<copy src="grandparent()" trait="_Animation" />
+					<mul> 510 </mul>
+				</sub>
+				<max> 0 </max>
+			</alpha>
+			<depth> 1 </depth>
+			<x>
+				<copy> 0 </copy>
+				<sub>
+					<copy src="parent()" trait="width" />
+					<mul src="grandparent()" trait="_Animation" />
+				</sub>
+			</x>
+			<y> <copy src="me()" trait="x" /> </y>
+			<width>
+				<copy src="parent()" trait="width" />
+				<add>
+					<copy src="parent()" trait="width" />
+					<mul> 2 </mul>
+					<mul src="grandparent()" trait="_Animation" />
+				</add>
+			</width>
+			<height> <copy src="me()" trait="width" /> </height>
+			<zoom> &scale; </zoom>
+			<systemcolor> <copy src="parent()" trait="systemcolor" /> </systemcolor>
+			<filename> <copy src="parent()" trait="filename" /> </filename>
+		</image>
+
+		<image name="DropShadow">
+			<visible> 1 </visible>
+			<alpha>
+				<copy src="parent()" trait="alpha" />
+				<div> 2 </div>
+			</alpha>
+			<depth> -1 </depth>
+			<x>	4 </x>
+			<y> 4 </y>
+			<height> <copy src="parent()" trait="height" /> </height>
+			<width> <copy src="parent()" trait="width" /> </width>
+			<zoom> &scale; </zoom>
+			<systemcolor> 0 </systemcolor>
+			<red> 0 </red>
+			<green> 0 </green>
+			<blue> 0 </blue>
+			<filename> <copy src="parent()" trait="filename" /> </filename>
+		</image>
+
+		<text name="LocationName">
+			<visible> 1 </visible>
+			<alpha>
+				<copy src="grandparent()" trait="_Animation" />
+				<mul> 765 </mul>
+				<min> 255 </min>
+			</alpha>
+			<depth> 0 </depth>
+			<x>
+				<copy src="parent()" trait="width" />
+				<div> 2 </div>
+				<sub> 2 </sub>
+			</x>
+			<y>
+				<copy src="parent()" trait="height" />
+				<add> 4 </add>
+			</y>
+			<zoom> 150 </zoom>
+			<systemcolor> &pipboy; </systemcolor>
+			<font> 7 </font>
+			<justify> &center; </justify>
+			<wrapwidth> 512 </wrapwidth>
+			<string> <copy src="parent()" trait="_location" /> </string>
+		</text>
+
+	</image>
+
+	<image name="LocationDiscoveryScanlines">
+		<visible> 1 </visible>
+		<alpha>
+			<copy> 50 </copy>
+			<mul> 2.55 </mul>
+		</alpha>
+		<depth> 10 </depth>
+		<x>
+			<copy src="parent()" trait="_offset_x" />
+			<sub src="parent()" trait="x" />
+		</x>
+		<y>
+			<copy src="parent()" trait="_offset_y" />
+			<sub src="parent()" trait="y" />
+		</y>
+		<zoom> -1 </zoom>
+		<width> 1024 </width>
+		<height> 1024 </height>
+		<systemcolor> &pipboy; </systemcolor>
+		<brightness> 225 </brightness>
+		<filename> Interface\Stentorious\ModernMinimap\Scanlines.dds </filename>
+	</image>
+
+</rect>

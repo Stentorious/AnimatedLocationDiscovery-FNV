@@ -1,0 +1,16 @@
+begin function {}  
+	; Set attach path string
+	string_var sModelSubPathFromAnim = Goo1.AuxVarGetStr "*ALD_Model"							
+	string_var sModelAttach = "B42AttachPointL|*_B42*"+(sModelSubPathFromAnim)	
+	
+	; Store path for unattach
+	Goo1.AuxVarSetStr "*ALD_Attachable" (sModelAttach)
+	
+	; Attach model
+	AttachModel Player 3 (Goo1.AuxVarGetStr "*ALD_Attachable" )
+	Player.RefreshAnimData	
+	
+	; Cleanup
+	sv_destruct sModelSubPathFromAnim  sModelAttach
+	Goo1.AuxVarErase "*ALD_Attach"
+end

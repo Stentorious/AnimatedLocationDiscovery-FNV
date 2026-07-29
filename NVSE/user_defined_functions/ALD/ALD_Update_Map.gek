@@ -1,0 +1,24 @@
+begin Function {}
+	ref rWorldSpace
+	ref rWorldSpaceTemp
+	
+	if eval Player.IsInInterior
+		if eval IsReference (rWorldSpace = GetPCLastExteriorDoor) == 0
+			return
+		endif
+		rWorldSpace = rWorldSpace.GPW
+	else
+		rWorldSpace = Player.GPW
+	endif
+	
+	while IsFormValid (rWorldSpace = GetWorldParentWorld (rWorldSpaceTemp = rWorldSpace))
+	loop
+	
+	rWorldSpace = rWorldSpaceTemp
+	
+	if eval (TestExpr GetWorldSpaceMapTexture rWorldSpace) == 0
+		return
+	endif
+	SetUIStringAlt "HUDMainMenu\LocationDiscovery\_WorldMapTexture" (GetWorldSpaceMapTexture rWorldSpace)	
+end
+

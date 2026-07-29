@@ -1,0 +1,33 @@
+begin Function {}
+	;print "Reset Handler running"
+
+	SetUIFloatGradual "HUDMainMenu\LocationDiscovery\_Animation" 0
+
+	; Restore pipboy light glow nodes hidden by the location handler (it culls
+	; 0/1/2 but only 2 was ever restored, dimming the light permanently)
+	ToggleNthPipboyLight 0 1
+	ToggleNthPipboyLight 1 1
+	ToggleNthPipboyLight 2 1
+
+	; Update model
+	Player.SetMatrPropVal "pipboyscreen:0" 8 1
+	if eval TogglePipBoyLight
+		Player.SetMatrPropVal "PipboyLightEffect:0" 7 1
+		Player.SetMatrPropVal "PipboyLightEffect:0_TNW" 7 1
+		Player.SetMatrPropVal "PipboyLightEffect:1_N" 7 1
+		Player.SetMatrPropVal "PipboyLightEffect:1_TNW" 7 1
+	endif
+
+	; Reset block for chameleon effect
+	if eval Player.GetAV Chameleon > 0
+		Player.SetNifBlockFlag "pipboyscreen:0" 0 1
+		Player.SetMatrPropVal "pipboyscreen:0" 7 1
+	endif
+
+	; Reset screen texture
+	Player.ProjectUITile "HUDMainMenu" "pipboyscreen:0" -1000 -1000 1 1
+
+	; "Pip-Boy Screen Always On" compatibility
+	Player.AuxVarSetFlt "*_PBSAODisable" 0
+
+end
