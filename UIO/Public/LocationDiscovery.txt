@@ -2,4 +2,3 @@ Stentorious\LocationDiscovery.xml::HUDMainMenu
 true
 Stentorious\LocationDiscovery\JDC.xml::@Prefabs\JDC\JDC.xml::JDC
 #JDC\JDC.xml
-true
