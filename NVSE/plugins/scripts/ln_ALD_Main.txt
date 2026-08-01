@@ -1,16 +1,12 @@
-;print "[Animated Location Discovery] loaded"
-
 ; On game restart
 if eval Goo1.AuxVarGetFlt "*ALD_Init"
 	return
 endif
 Goo1.AuxVarSetFlt "*ALD_Init" 1
 
-; == SET MOD OPTIONS ==
 Goo1.AuxVarSetFlt "*ALD_AC" (GetINIFloat "Settings:iAllowCombat" "ALD\AnimatedLocation.ini")
 Goo1.AuxVarSetFlt "*ALD_A3P" (GetINIFloat "Settings:iAllow3rdPerson" "ALD\AnimatedLocation.ini")
 
-;-----------Event------------
 SetEventHandler "OnCellExit" (CompileScript "ALD\ALD_Update_Map.gek")
 SetOnFastTravelEventHandler (CompileScript "ALD\ALD_Update_Map.gek") 1
 SetOnLocationDiscoverEventHandler (CompileScript "ALD\OnLocationDiscover.gek") 1
