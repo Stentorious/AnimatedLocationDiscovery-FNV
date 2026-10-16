@@ -2,7 +2,7 @@ ref rWorldSpace
 
 ref rWorldSpaceTemp
 
-begin Function {ref rWorldSpace}
+begin Function {rWorldSpace}
 
 	; Get current world map texture
 	if eval Player.IsInInterior
