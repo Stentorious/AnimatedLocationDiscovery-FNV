@@ -24,6 +24,11 @@ begin Function {}
 		Player.SetMatrPropVal "pipboyscreen:0" 7 1
 	endif
 
+	; Reset Fallout: The New West Pip-Boy
+	if eval ModelHasBlock Player "screenlid"
+		Player.SetNifRot "screenlid" 90 0 0 2 2
+	endif
+
 	; Reset screen texture
 	Player.ProjectUITile "HUDMainMenu" "pipboyscreen:0" -1000 -1000 1 1
 

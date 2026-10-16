@@ -24,6 +24,12 @@ begin Function {rMapMarker}
 		fTemp3 = (((Player.GetAV RadiationRads) - 500) / 500) * 90
 		Player.SetNifRot "RadNeedle" (fTemp1) (fTemp2) (fTemp3) 2 2
 	endif
+
+	; Open Fallout: The New West Pip-Boy screen
+	if eval ModelHasBlock Player "screenlid"
+		Player.SetNifRot "screenlid" -80 0 0 2 2
+	endif
+
 	Player.SetNifBlockFlag "pipboyscreen:0" 0 1
 	Player.SetMatrPropVal "PipboyLightEffect:0" 7 0
 	Player.SetMatrPropVal "PipboyLightEffect:0_TNW" 7 0
