@@ -1,3 +1,4 @@
+; On game load
 CallAfterFrames 0 (CompileScript "ALD\UpdateMap.gek") 0 Player
 
 ; On game restart
